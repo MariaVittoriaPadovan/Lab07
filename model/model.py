@@ -17,6 +17,7 @@ class Model:
     def get_artefatti_filtrati(self, museo:str, epoca:str):
         """Restituisce la lista di tutti gli artefatti filtrati per museo e/o epoca (filtri opzionali)."""
         # TODO
+        artefatti=ArtefattoDAO.read_artefatti(museo, epoca)
 
     def get_epoche(self):
         """Restituisce la lista di tutte le epoche."""
