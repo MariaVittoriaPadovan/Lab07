@@ -13,19 +13,20 @@ class MuseoDAO:
     # TODO
 
     @staticmethod
-    def read_musei(self):
+    def read_musei():
         print("Executing read from database using SQL query")
         results = []
         cnx = ConnessioneDB.get_connection()
 
         if cnx is None:
             print("Connection failed")
-            return None
+            return [] #per non avere problemi quando itero per le opzioni della dropdown
         else:
             cursor = cnx.cursor(dictionary=True)
             # Una sola query, con cui si leggono tutte le righe (si selezioneranno poi quelle che interessano es. con un if)
             query = """SELECT * 
-                        FROM Museo"""
+                        FROM Museo
+                        ORDER BY nome"""
             cursor.execute(query)
             for row in cursor:
                 # Posso creare oggetti di tipo Museo

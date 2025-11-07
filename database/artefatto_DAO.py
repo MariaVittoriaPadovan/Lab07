@@ -11,19 +11,19 @@ class ArtefattoDAO:
         pass
 
     @staticmethod
-    def read_artefatti(self, museo:str, epoca:str):
+    def read_artefatti(museo:str, epoca:str):
         print("Executing read from database using SQL query")
         results = []
         cnx = ConnessioneDB.get_connection()
 
         if cnx is None:
             print("Connection failed")
-            return None
+            return [] #per non avere problemi quando itero per le opzioni della dropdown
         else:
             cursor = cnx.cursor(dictionary=True)
             # Una sola query, con cui si leggono tutte le righe (si selezioneranno poi quelle che interessano es. con un if)
-            query = """SELECT * 
-                       FROM Artefatto"""
+            query = """SELECT * FROM artefatto A JOIN museo M ON A.id_museo = M.id;
+"""
             cursor.execute(query)
             for row in cursor:
                 # Posso creare oggetti di tipo Artefatto
@@ -33,3 +33,15 @@ class ArtefattoDAO:
             cursor.close()
             cnx.close()
             return results
+
+    @staticmethod
+    def read_epoche():
+        cnx = ConnessioneDB.get_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("""SELECT DISTINCT epoca 
+                          FROM artefatto 
+                          ORDER BY epoca;""")
+        epoche = [row["epoca"] for row in cursor]
+        cursor.close()
+        cnx.close()
+        return epoche

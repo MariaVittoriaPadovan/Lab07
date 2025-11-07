@@ -37,33 +37,30 @@ class View:
 
         # --- Sezione 2: Filtraggio ---
         # TODO
-        self._dd_musei = ft.Dropdown(label="Museo",
-                                     options=[ft.dropdown.Option("1", "*"),
-                                              ft.dropdown.Option("2", "**"),
-                                              ft.dropdown.Option("3", "***"),
-                                              ft.dropdown.Option("4", "****"),
-                                              ft.dropdown.Option("5", "*****")],
+        self.dd_musei = ft.Dropdown(label="Museo",
+                                     options=[],
                                      width=200,
-                                     hint_text="Select the number of stars",
-                                     on_change=self._controller.handler_dropdown_change
+                                     hint_text="Seleziona il museo",
+                                     on_change=self.controller.handler_dropdown_change_museo
                                      )
-        self._dd_epoca = ft.Dropdown(label="Epoca",
-                                     options=[ft.dropdown.Option("1", "*"),
-                                              ft.dropdown.Option("2", "**"),
-                                              ft.dropdown.Option("3", "***"),
-                                              ft.dropdown.Option("4", "****"),
-                                              ft.dropdown.Option("5", "*****")],
+        self.dd_epoca = ft.Dropdown(label="Epoca",
+                                     options=[],
                                      width=200,
-                                     hint_text="Select the number of stars",
-                                     on_change=self._controller.handler_dropdown_change
+                                     hint_text="Seleziona l'epoca",
+                                     on_change=self.controller.handler_dropdown_change_epoca
+                                     )
+        btn_mostra_artefatti = ft.ElevatedButton(text="Mostra Artefatti",
+                                                 width=200,
+                                                 on_click=self.controller.mostra_artefatti
+                                                 )
+
 
         # Sezione 3: Artefatti
         # TODO
-        btn_mostra_artefatti = ft.ElevatedButton(text="Mostra Artefatti",
-                                                      width=200,
-                                                      tooltip="Businesses with stars higher than chosen one",
-                                                      on_click=self._controller.handler_btn_businesses_with_stars
-                                                      )
+        self.list_artefatti = ft.ListView(
+            spacing=10
+        )
+
 
         # --- Toggle Tema ---
         self.toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=self.cambia_tema)
@@ -78,13 +75,25 @@ class View:
 
             # Sezione 2: Filtraggio
             # TODO
+            ft.Row(
+                controls=[
+                    self.dd_musei,
+                    self.dd_epoca,
+                    btn_mostra_artefatti
+                ],
+                alignment=ft.MainAxisAlignment.CENTER
+            ),
+            ft.Divider(),
 
             # Sezione 3: Artefatti
             # TODO
+            self.list_artefatti
         )
 
         self.page.scroll = "adaptive"
         self.page.update()
+
+        self.controller.popola_dropdown()
 
     def cambia_tema(self, e):
         """ Cambia tema scuro/chiaro """
