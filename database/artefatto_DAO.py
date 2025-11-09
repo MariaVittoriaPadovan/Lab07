@@ -22,9 +22,19 @@ class ArtefattoDAO:
         else:
             cursor = cnx.cursor(dictionary=True)
             # Una sola query, con cui si leggono tutte le righe (si selezioneranno poi quelle che interessano es. con un if)
-            query = """SELECT * FROM artefatto A JOIN museo M ON A.id_museo = M.id;
-"""
+            query = """SELECT * FROM artefatto A JOIN museo M ON A.id_museo = M.id"""
+
+            if museo != "Nessun filtro" and epoca != "Nessun filtro":
+                query += f" WHERE M.nome='{museo}' AND A.epoca='{epoca}'"
+            elif museo != "Nessun filtro":
+                query += f" WHERE M.nome ='{museo}'"
+            elif epoca != "Nessun filtro":
+                query += f" WHERE A.epoca ='{epoca}'"
+
+            query += " ORDER BY A.nome"
+
             cursor.execute(query)
+
             for row in cursor:
                 # Posso creare oggetti di tipo Artefatto
                 artefatto = Artefatto(row["id"], row["nome"], row["tipologia"], row["epoca"], row["id_museo"])
