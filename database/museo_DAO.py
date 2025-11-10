@@ -23,14 +23,15 @@ class MuseoDAO:
             return [] #per non avere problemi quando itero per le opzioni della dropdown
         else:
             cursor = cnx.cursor(dictionary=True)
-            # Una sola query, con cui si leggono tutte le righe (si selezioneranno poi quelle che interessano es. con un if)
+            #leggo tutte le righe e seleziono quelle che mi interessano con un if
             query = """SELECT * 
                         FROM Museo
                         ORDER BY nome"""
+
             cursor.execute(query)
+
             for row in cursor:
-                # Posso creare oggetti di tipo Museo
-                museo = Museo(row["id"], row["nome"], row["tipologia"])
+                museo = Museo(row["id"], row["nome"], row["tipologia"]) #creo oggetti museo
                 results.append(museo)
 
             cursor.close()

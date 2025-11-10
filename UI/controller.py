@@ -20,8 +20,9 @@ class Controller:
     # POPOLA DROPDOWN
     # TODO
     def popola_dropdown(self):
-        musei = ["Nessun filtro"] + [m.nome for m in self._model.get_musei()]
+        musei = ["Nessun filtro"] + [museo.nome for museo in self._model.get_musei()]
         epoche = ["Nessun filtro"] + self._model.get_epoche()
+
         self._view.dd_musei.options = [ft.dropdown.Option(m) for m in musei]
         self._view.dd_epoca.options = [ft.dropdown.Option(e) for e in epoche]
         self._view.update()
@@ -49,13 +50,14 @@ class Controller:
 
         # popola la ListView
         if not artefatti:
-            self._view.list_artefatti.controls.append(
-                ft.Text("Nessun artefatto trovato nel database.")
-            )
+            self._view.show_alert("Artefatto non trovato")
         else:
             for a in artefatti:
                 self._view.list_artefatti.controls.append(
-                    ft.Text(f"{a.nome} - {a.tipologia} ({a.epoca}) [Museo {a.id_museo}]")
+                    ft.Text(
+                        f"ID: {a.id} | Artefatto: {a.nome} | Tipologia: {a.tipologia} | "
+                        f"Epoca: {a.epoca} | Museo: {a.museo_nome} (ID museo: {a.id_museo})"
+                    )
                 )
 
 

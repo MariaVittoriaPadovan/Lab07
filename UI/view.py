@@ -43,12 +43,14 @@ class View:
                                      hint_text="Seleziona il museo",
                                      on_change=self.controller.handler_dropdown_change_museo
                                      )
+
         self.dd_epoca = ft.Dropdown(label="Epoca",
                                      options=[],
                                      width=200,
                                      hint_text="Seleziona l'epoca",
                                      on_change=self.controller.handler_dropdown_change_epoca
                                      )
+
         btn_mostra_artefatti = ft.ElevatedButton(text="Mostra Artefatti",
                                                  width=200,
                                                  on_click=self.controller.mostra_artefatti

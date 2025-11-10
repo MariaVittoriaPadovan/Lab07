@@ -21,8 +21,18 @@ class ArtefattoDAO:
             return [] #per non avere problemi quando itero per le opzioni della dropdown
         else:
             cursor = cnx.cursor(dictionary=True)
-            # Una sola query, con cui si leggono tutte le righe (si selezioneranno poi quelle che interessano es. con un if)
-            query = """SELECT * FROM artefatto A JOIN museo M ON A.id_museo = M.id"""
+            #leggo tutte le righe e poi seleziono solo quelle che mi interessano con un if
+            query = """
+            SELECT 
+                A.id AS artefatto_id,
+                A.nome AS artefatto_nome,
+                A.tipologia,
+                A.epoca,
+                A.id_museo,
+                M.nome AS museo_nome
+            FROM artefatto A
+            JOIN museo M ON A.id_museo = M.id
+            """
 
             if museo != "Nessun filtro" and epoca != "Nessun filtro":
                 query += f" WHERE M.nome='{museo}' AND A.epoca='{epoca}'"
@@ -36,8 +46,15 @@ class ArtefattoDAO:
             cursor.execute(query)
 
             for row in cursor:
-                # Posso creare oggetti di tipo Artefatto
-                artefatto = Artefatto(row["id"], row["nome"], row["tipologia"], row["epoca"], row["id_museo"])
+                artefatto = Artefatto( #creo oggetti artefatto
+                    row["artefatto_id"],
+                    row["artefatto_nome"],
+                    row["tipologia"],
+                    row["epoca"],
+                    row["id_museo"])
+
+                artefatto.museo_nome = row["museo_nome"] #aggiungo il nome del museo
+
                 results.append(artefatto)
 
             cursor.close()
@@ -51,7 +68,9 @@ class ArtefattoDAO:
         cursor.execute("""SELECT DISTINCT epoca 
                           FROM artefatto 
                           ORDER BY epoca;""")
-        epoche = [row["epoca"] for row in cursor]
+
+        epoche =[row["epoca"] for row in cursor]
+
         cursor.close()
         cnx.close()
         return epoche
