@@ -10,6 +10,14 @@ class Museo:
     nome: str
     tipologia: str
 
+    #relazioni
+    lista_artefatti: list=None #lista di artefatti collegata a quello specifico museo
+
+    def get_artefatti(self):
+        if self.lista_artefatti is None:
+            self.lista_artefatti= ArtefattoDAO.get_artefatti(self.id)
+        return self.lista_artefatti
+
     def __eq__(self, other):
         return isinstance(other, Museo) and self.id == other.id
 
