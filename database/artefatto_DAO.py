@@ -11,10 +11,35 @@ class ArtefattoDAO:
         pass
 
     @staticmethod
-    def read_artefatti(museo:str, epoca:str):
-        print("Executing read from database using SQL query")
-        results = []
+    def get_artefatti_filtrati(museo:str, epoca:str):
         cnx = ConnessioneDB.get_connection()
+        results = []
+
+        if cnx is None:
+            print("Connection failed")
+            return None
+
+        cursor = cnx.cursor(dictionary=True)
+        query = """SELECT a.* 
+                    FROM artefatto as a, museo as m 
+                    WHERE m.nome= COALESCE(%s, m.nome) and a.epoca=%s and a.id_museo=m.id_museo"""
+
+        '''
+        COALESCE(%s, m.nome) valuta se l'attributo è nullo oppure no
+        '''
+
+        try:
+            cursor.execute(query)
+            for row in cursor:
+                results.append(row["epoca"])
+        except Exception as e:
+            print("Errore durante la query artefatto epoca")
+            result = None
+        finally:  # fa quello che scrivo sia che vado nel try sia che vado nell'except
+            cursor.close()
+            cnx.close()
+
+        return results
 
         if cnx is None:
             print("Connection failed")
@@ -62,15 +87,26 @@ class ArtefattoDAO:
             return results
 
     @staticmethod
-    def read_epoche():
+    def get_epoche():
         cnx = ConnessioneDB.get_connection()
+        results = []
+
+        if cnx is None:
+            print("Connection failed")
+            return None
+
         cursor = cnx.cursor(dictionary=True)
-        cursor.execute("""SELECT DISTINCT epoca 
-                          FROM artefatto 
-                          ORDER BY epoca;""")
+        query = """SELECT DISTINCT epoca FROM artefatto """
 
-        epoche =[row["epoca"] for row in cursor]
+        try:
+            cursor.execute(query)
+            for row in cursor:
+                results.append(row["epoca"])
+        except Exception as e:
+            print("Errore durante la query artefatto epoca")
+            result = None
+        finally:  # fa quello che scrivo sia che vado nel try sia che vado nell'except
+            cursor.close()
+            cnx.close()
 
-        cursor.close()
-        cnx.close()
-        return epoche
+        return results

@@ -13,27 +13,27 @@ class MuseoDAO:
     # TODO
 
     @staticmethod
-    def read_musei():
-        print("Executing read from database using SQL query")
-        results = []
+    def read_musei(): #se metto @staticmethod non devo passare il self come parametro
         cnx = ConnessioneDB.get_connection()
+        results = []
 
         if cnx is None:
             print("Connection failed")
-            return [] #per non avere problemi quando itero per le opzioni della dropdown
-        else:
-            cursor = cnx.cursor(dictionary=True)
-            #leggo tutte le righe e seleziono quelle che mi interessano con un if
-            query = """SELECT * 
-                        FROM Museo
-                        ORDER BY nome"""
+            return None
 
+        cursor = cnx.cursor(dictionary=True)
+        query = """SELECT * FROM Museo"""
+
+        try:
             cursor.execute(query)
-
             for row in cursor:
-                museo = Museo(row["id"], row["nome"], row["tipologia"]) #creo oggetti museo
+                museo = Museo(id=row["id"], nome=row["nome"], tipologia=row["tipologia"]) #creo oggetti museo
                 results.append(museo)
-
+        except Exception as e:
+            print("Errore durante la query museo")
+            result= None
+        finally: #fa quello che scrivo sia che vado nel try sia che vado nell'except
             cursor.close()
             cnx.close()
-            return results
+
+        return results
