@@ -22,18 +22,25 @@ class ArtefattoDAO:
         cursor = cnx.cursor(dictionary=True)
         query = """SELECT a.* 
                     FROM artefatto as a, museo as m 
-                    WHERE m.nome= COALESCE(%s, m.nome) and a.epoca=%s and a.id_museo=m.id_museo"""
+                    WHERE m.nome= COALESCE(%s, m.nome) and a.epoca=COALESCE(%s, a.epoca) and a.id_museo=m.id_museo"""
 
         '''
-        COALESCE(%s, m.nome) valuta se l'attributo è nullo oppure no
+        COALESCE(%s, m.nome) serve perché nel caso in cui %s sia nullo lui lo pone uguale a m.nome che gli sto passando
         '''
 
         try:
-            cursor.execute(query)
+            cursor.execute(query, (museo,epoca,)) #è importante l'ordine per museo e epoca
             for row in cursor:
-                results.append(row["epoca"])
+                artefatto = Artefatto(  # creo oggetti artefatto
+                    id= row["artefatto_id"],
+                    nome= row["artefatto_nome"],
+                    tipologia= row["tipologia"],
+                    epoca= row["epoca"],
+                    id_museo= row["id_museo"])
+                results.append(artefatto)
+
         except Exception as e:
-            print("Errore durante la query artefatto epoca")
+            print("Errore durante la query artefatto filtrato")
             result = None
         finally:  # fa quello che scrivo sia che vado nel try sia che vado nell'except
             cursor.close()
@@ -41,50 +48,6 @@ class ArtefattoDAO:
 
         return results
 
-        if cnx is None:
-            print("Connection failed")
-            return [] #per non avere problemi quando itero per le opzioni della dropdown
-        else:
-            cursor = cnx.cursor(dictionary=True)
-            #leggo tutte le righe e poi seleziono solo quelle che mi interessano con un if
-            query = """
-            SELECT 
-                A.id AS artefatto_id,
-                A.nome AS artefatto_nome,
-                A.tipologia,
-                A.epoca,
-                A.id_museo,
-                M.nome AS museo_nome
-            FROM artefatto A
-            JOIN museo M ON A.id_museo = M.id
-            """
-
-            if museo != "Nessun filtro" and epoca != "Nessun filtro":
-                query += f" WHERE M.nome='{museo}' AND A.epoca='{epoca}'"
-            elif museo != "Nessun filtro":
-                query += f" WHERE M.nome ='{museo}'"
-            elif epoca != "Nessun filtro":
-                query += f" WHERE A.epoca ='{epoca}'"
-
-            query += " ORDER BY A.nome"
-
-            cursor.execute(query)
-
-            for row in cursor:
-                artefatto = Artefatto( #creo oggetti artefatto
-                    row["artefatto_id"],
-                    row["artefatto_nome"],
-                    row["tipologia"],
-                    row["epoca"],
-                    row["id_museo"])
-
-                artefatto.museo_nome = row["museo_nome"] #aggiungo il nome del museo
-
-                results.append(artefatto)
-
-            cursor.close()
-            cnx.close()
-            return results
 
     @staticmethod
     def get_epoche():

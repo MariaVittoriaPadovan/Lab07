@@ -13,7 +13,7 @@ class MuseoDAO:
     # TODO
 
     @staticmethod
-    def read_musei(): #se metto @staticmethod non devo passare il self come parametro
+    def get_musei(): #se metto @staticmethod non devo passare il self come parametro
         cnx = ConnessioneDB.get_connection()
         results = []
 

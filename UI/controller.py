@@ -19,46 +19,66 @@ class Controller:
 
     # POPOLA DROPDOWN
     # TODO
-    def popola_dropdown(self):
-        musei = ["Nessun filtro"] + [museo.nome for museo in self._model.get_musei()]
-        epoche = ["Nessun filtro"] + self._model.get_epoche()
+    def popola_dropdown_musei(self):
+        self._view.dropdown_museo.options.clear()
+        self._view.dropdown_museo.options.append(ft.dropdown.Option(None, "Nessun filtro"))
+        #valore None che corrisponde a 'Nessun filtro'(opzione del dropdown)
 
-        self._view.dd_musei.options = [ft.dropdown.Option(m) for m in musei]
-        self._view.dd_epoca.options = [ft.dropdown.Option(e) for e in epoche]
+        musei= self._model.get_musei()
+        if musei:
+            for museo in musei:
+                self._view.dropdown_museo.options.append(ft.dropdown.Option(museo.nome))
+        else:
+            self._view.show_alert("Errore nella lista dropdown musei")
+
+        self._view.update()
+
+    def popola_dropdown_epoche(self):
+        self._view.dropdown_epoche.options.clear()
+        self._view.dropdown_epoche.options.append(ft.dropdown.Option(None, "Nessun filtro"))
+        # valore None che corrisponde a 'Nessun filtro'(opzione del dropdown)
+
+        epoche = self._model.get_epoche()
+        if epoche:
+            for epoca in epoche:
+                self._view.dropdown_epoche.options.append(ft.dropdown.Option(epoca))
+        else:
+            self._view.show_alert("Errore nella lista dropdown epoche")
+
         self._view.update()
 
 
     # CALLBACKS DROPDOWN
     # TODO
-    def handler_dropdown_change_museo(self, e):
-        self.museo_selezionato = e.control.value
-        print(f"Museo selezionato: {self.museo_selezionato}")
+    def on_museo_change(self, e):
+        valore=e.control.value #salvo il valore del museo selezionato dal dropdown(control)
+        self.museo_selezionato = None if valore=="Nessun filtro" else valore
 
-    def handler_dropdown_change_epoca(self, e):
-        self.epoca_selezionata = e.control.value
-        print(f"Epoca selezionata: {self.epoca_selezionata}")
+
+    def on_epoca_change(self, e):
+        valore = e.control.value  # salvo il valore dell'epoca selezionata dal dropdown(control)
+        self.epoca_selezionata = None if valore == "Nessun filtro" else valore
+
 
     # AZIONE: MOSTRA ARTEFATTI
     # TODO
     def mostra_artefatti(self, e):
-        # evento per il pulsante mostra
-        museo = self._view.dd_musei.value
-        epoca = self._view.dd_epoca.value
-        artefatti=self._model.get_artefatti_filtrati(museo, epoca)
+        """Mostra gli artefatti filtrati per museo e/o epoca (filtri opzionali)."""
+        museo = self.museo_selezionato
+        epoca = self.epoca_selezionata
 
-        self._view.list_artefatti.controls.clear() #ripulisco la list view
+        self._view.lista_artefatti.controls.clear()
+        lista_artefatti = self._model.get_artefatti_filtrati(museo, epoca)
 
-        # popola la ListView
-        if not artefatti:
-            self._view.show_alert("Artefatto non trovato")
+        if lista_artefatti is None:
+            self._view.show_alert("Errore di connessione al database.")
+        elif len(lista_artefatti) == 0:
+            self._view.show_alert("Nessun artefatto trovato per i criteri selezionati")
         else:
-            for a in artefatti:
-                self._view.list_artefatti.controls.append(
-                    ft.Text(
-                        f"ID: {a.id} | Artefatto: {a.nome} | Tipologia: {a.tipologia} | "
-                        f"Epoca: {a.epoca} | Museo: {a.museo_nome} (ID museo: {a.id_museo})"
-                    )
-                )
+            for artefatto in lista_artefatti:
+                self._view.lista_artefatti.controls.append(ft.Text(f"{artefatto}"))
+
+        self._view.update()
 
 
         self._view.update()

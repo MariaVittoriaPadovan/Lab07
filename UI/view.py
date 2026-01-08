@@ -37,31 +37,31 @@ class View:
 
         # --- Sezione 2: Filtraggio ---
         # TODO
-        self.dd_musei = ft.Dropdown(label="Museo",
-                                     options=[],
-                                     width=200,
-                                     hint_text="Seleziona il museo",
-                                     on_change=self.controller.handler_dropdown_change_museo
-                                     )
+        # Dropdown musei
+        self.dropdown_museo = ft.Dropdown(
+            label="Museo",
+            width=400,
+            options=[ft.dropdown.Option(key="None", text="Nessun Filtro")],
+            on_change=self.controller.on_museo_change  # Callback collegata
+        )
+        self.controller.popola_dropdown_musei()
 
-        self.dd_epoca = ft.Dropdown(label="Epoca",
-                                     options=[],
-                                     width=200,
-                                     hint_text="Seleziona l'epoca",
-                                     on_change=self.controller.handler_dropdown_change_epoca
-                                     )
-
-        btn_mostra_artefatti = ft.ElevatedButton(text="Mostra Artefatti",
-                                                 width=200,
-                                                 on_click=self.controller.mostra_artefatti
-                                                 )
-
+        # Dropdown epoca
+        self.dropdown_epoca = ft.Dropdown(
+            label="Epoca",
+            width=220,
+            options=[ft.dropdown.Option(key="None", text="Nessun Filtro")],
+            on_change=self.controller.on_epoca_change  # Callback collegata
+        )
+        self.controller.popola_dropdown_epoche()
 
         # Sezione 3: Artefatti
         # TODO
-        self.list_artefatti = ft.ListView(
-            spacing=10
+        pulsante_mostra_artefatti = ft.ElevatedButton(
+            "Mostra Artefatti",
+            on_click=self.controller.mostra_artefatti
         )
+        self.lista_artefatti = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
 
 
         # --- Toggle Tema ---
@@ -78,24 +78,29 @@ class View:
             # Sezione 2: Filtraggio
             # TODO
             ft.Row(
-                controls=[
-                    self.dd_musei,
-                    self.dd_epoca,
-                    btn_mostra_artefatti
-                ],
+                spacing=20,
+                controls=[self.dropdown_museo, self.dropdown_epoca],
                 alignment=ft.MainAxisAlignment.CENTER
             ),
             ft.Divider(),
 
             # Sezione 3: Artefatti
             # TODO
-            self.list_artefatti
+            ft.Row(
+                spacing=200,
+                controls=[pulsante_mostra_artefatti],
+                alignment=ft.MainAxisAlignment.CENTER
+            ),
+            ft.Container(
+                content=self.lista_artefatti,
+                height=250,
+                border=ft.border.all(1, ft.Colors.BLACK),
+                padding=5,
+            ),
         )
 
         self.page.scroll = "adaptive"
         self.page.update()
-
-        self.controller.popola_dropdown()
 
     def cambia_tema(self, e):
         """ Cambia tema scuro/chiaro """
